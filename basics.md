@@ -289,3 +289,46 @@ let five = Some(5);
 let six = plus_one(five);
 let none = plus_one(None);
 ```
+
+## Packages Crates and Modules (but not workspaces yet)
+* __Package__: A Cargo feature that lets you build, test, and share crates
+* __Crates__: A tree of modules that produces a library or executable
+* __Modules and use__: Let you control the organization, scope, and privacy of paths within a crate
+* __Paths__: A way of naming an item, such as a struct, function, or module
+
+* A package can contain multiple binary crates and optionally one library crate. 
+* a _crate root_ is the src file that the compiler starts with. it's the _root module_ of your crate. They are referred to as `crate` in namespacing
+* `cargo new` creates a package (the _cargo.toml_ file). by default the crate root is the main or lib file
+* if you put rs files in _src/bin_, each file will be a different binary crate
+
+* define a module with the `mod` keyword. modules can be nested
+
+```
+crate
+ └── front_of_house (mod)
+     ├── hosting (mod)
+     │   ├── add_to_waitlist (fn)
+     │   └── seat_at_table (fn)
+     └── serving (mod)
+         ├── take_order (fn)
+         ├── serve_order (fn)
+         └── take_payment (fn)
+```
+
+* refer to an absolute path with `crate::front_of_house::hosting::add_to_waitlist();`
+* refer to a relative path (from in the crate root) with `front_of_house::hosting::add_to_waitlist();`
+
+* modules also define the _privacy boundary_ - everything is private by default
+* children modules can use anything in parents, even when private, but not VV
+* expose parts of the childen nodes to their parents with the `pub` keyword
+* use `super::` to refer to a child modules parent
+* if you make a struct public, the field will still be private unless you make _them_ public
+* if you make an enum public, all of its variants are public
+
+* use `use` to create shorthands for paths: `use crate::front_of_house::hosting; hosting::add_to_waitlist()`
+* to use `use` with a relative path, you have to specify `self` like `use self::front_of_house::hosting;`
+* don't import the full path to a function, to make clear the function isn't locally defined.
+* DO import the full path to a structure, unless you run into namespace issues - or you can use `as` to get around name conflicts `use std::io::Result as IoResult;`
+* use `pub use` if necessary 
+
+* to have a multi file structure, take the code from the scope block and put it in a file with the name of the module. But leave the `mod` where it is and put a `;` at the end of the line. That tells the compiler to look for that file
