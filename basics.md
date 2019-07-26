@@ -110,6 +110,8 @@ if number < 6 {
 * pattern matching: compare a value against patterns and execute on the one that matches
 * like an if without the boolean condition restriction 
 * arm syntax is `pattern => exec_code`
+* matches are exhaustive: you need to cover every possibility or it won't compile. you can provide an 'anything else' arm with `_` as the pattern
+* you can use `if let` to express your matches more concisely.
 
 ```rust
 enum Coin {
@@ -300,7 +302,7 @@ let loopback = IpAddr::V6(String::from("::1"));
 * the scenario where you are something or you are nothing - rusts answer to null
 * it has variants `Some` and `None` - don't need to namespace them here, so they are basically keywords
 * In effect it means you don't have to null check everything. because you can't add an `i32` and `Option<i32>` and only the Option can be 'null', you never accidentally try to add a non-null and null.
-* when you DO have a Option, you generally want to explicitly handle the cases where that option is None and Some - usually with match 
+* when you DO have a Option, since matches are exhaustive you have to implement the None case
 
 ```rust
 fn plus_one(x: Option<i32>) -> Option<i32> {
