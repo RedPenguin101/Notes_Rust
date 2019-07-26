@@ -11,6 +11,7 @@
 * create scopes with {} blocks
 * comments are `//`
 * `::` is used for specifying namespace. eg `String::from(literal)`
+* debug print with `"{:?}"` and pretty print with `"{:#?}"`
 
 ## variable declaration
 * `let x = 5`
@@ -30,6 +31,10 @@
 * available any time in the scope they are in
 * can be in global scope
 * since they are set at compiletime they can't be set to an expression result
+
+## Range Syntax
+* a Range object has syntax `x..y` where x and y are integers
+* when slicing `..3` is the range from the first (0th) index to the 2nd inclusive. `3..` goes to the last. `..` is the whole thing
 
 ## Stack Data types
 * scalars: integers, flp, booleans, characters
@@ -51,6 +56,13 @@
 * arrays are over/underflow safe, they will throw errors at runtime if you try to access.
 
 ### string literals
+
+### slices
+* a contiguous sequence of elements from a collection
+* denoted with &, with range syntax in square bracks
+* `let s = String::from("hello world"); let hello = &s[0..5];` - hello here is a sting slice type, denoted `&str`
+* a string literal is actually a string slice
+* you can also have arrays of other collections, like arrays. Array slices are like `&[u32]`
 
 ## functions
 ```rust
@@ -110,9 +122,10 @@ println!("{}", s2) // this is not fine because s1 was moved to s2 - s1 can no lo
 _this will fail at compiletime_
 
 * when the scope of the variable ends (the `{}` block) it is dropped and the memory cleaned up. `}` has an implicit `drop` function - like an explicit RAII pattern in C++
+
+### borrowing and references
 * If you want to keep the original variable after passing it into a function or other scope, you pass a _reference_ to the object with `&`, and the object will be moved into the function, then moved back at the end. this is __borrowing__
-* By default, an object can't change something it borrows. If you want the function to modify, you have to pass a _mutable reference_ with `&mut s` (the object you're passing itself has to be declared mutable too)
-* you can only have 1 mutable reference to an object in scope at any one time (to prevent data races)
+
 
 ```rust
 // simple borrow
@@ -128,6 +141,10 @@ fn calculate_length(s: &String) -> usize { // expects a reference to a String, n
 }
 ```
 _note you have to pass in a reference when calling the function, and the function has to expect a reference, not an object_
+
+### mutable references
+* By default, an object can't change something it borrows. If you want the function to modify, you have to pass a _mutable reference_ with `&mut s` (the object you're passing itself has to be declared mutable too)
+* you can only have 1 mutable reference to an object in scope at any one time (to prevent data races)
 
 ```rust
 // mutable referecnce
@@ -150,6 +167,9 @@ let r2 = &mut s1; // Not OK, 2 mutable borrows on s1 in same scope
 ```
 
 * the opposite of referencing (`&`) is dereferencing (`*`)
+
+### dangling pointers 
+
 * dangling pointers are caught at compile
 
 ```rust
@@ -171,3 +191,62 @@ _this won't compile because it returns a reference to something which doesn't ex
 * `let s = String::from("hello")`.
 * has a pointer, a length and a capacity
 * use `let s2 = s1.clone()` to deep copy
+
+
+## Structures
+* a `struct` is a data structure - fields but no methods
+* define like with comma separated, type annotated field names
+* instantiate like a dictionary KV pair (note if you want fields in the struct to be mutable you need the whole object to be)
+* access with dot notation `user1.email`
+* use a constructor method / function to instantiate with default values - by naming your params to match the fields you can shorthand
+* a structure with no fields is called a _unit like structure_
+* add derived traits by decorating: `#[derive(Debug)]` allows you you `println!("{:?}", my_struct)`
+* __tuple structs__ are structs whose fields have no key `struct Color(i32, i32, i32); let black = Color(0,0,0);`
+
+### definition
+```rust
+struct User {
+  username: String,
+  email: String,
+  sign_in_count: u64,
+  active: bool,
+}
+```
+
+### instantiation
+```rust
+let mut user1 = User {
+  email: String::from("uname@mail.com"),
+  sign_in_count: 1,
+  active: true,
+  username: String::from("uname"),
+}
+```
+
+### build with shorthand
+```rust
+fn build_user(email: String, username: String) -> User {
+ User {
+    email,
+    username,
+    sign_in_count: 1,
+    active: true,
+  }
+}
+```
+
+## Methods
+* use `impl` (implementation) block
+* must always pass `self` as first arg, meaning the object the method is being called on - normal rules about referencing and mutability apply. reference to the calling structs fields are `self.field`
+* __Associated Functions__ are functions that are defined in the `impl` block but don't act on an instance of a struct (i.e. they are not passed self as the first arg.). Class methods basically. often used for contructors. Access them with namespace notation `::`
+
+### Associated Function 
+```rust
+impl Rectangle {
+    fn square(size: u32) -> Rectangle {
+        Rectangle { width: size, height: size }
+    }
+}
+
+let sq = Rectangle::square(3);
+```
