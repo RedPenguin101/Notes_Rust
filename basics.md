@@ -45,9 +45,58 @@
 ## Heap data types
 ### String
 * string literals are not `Strings`. SL are known at compile time and immutable
-* `let s = String::from("hello")`.
+* `let s = String::from("hello")` or `let s = "hello".to_string();`
 * has a pointer, a length and a capacity
 * use `let s2 = s1.clone()` to deep copy
+* UTF8 encoded
+* mutable and expandable
+* `s.push_str("bat")` (note this function takes a string slice, not a String).
+* combine: `let s3 = s1 + &s2` (s1 has been moved, s2 only borrowed)
+* `let s = format!("{}-{}-{}", s1, s2, s3);`
+* Strings can't be indexed, but you can slice into string slices
+* `mystring.chars()` is an iterator, as is `mystring.bytes()`
+
+### Vector
+* `Vec<T>`. A stack basically
+* `let v: Vec<i32> = Vec::new()`, or `let v = vec![1,2,3]`
+* `v.push(6)` and `v.pop()` - both these constitute mutable borrows
+* get elements with index notation (returns a reference &T) or `v.get()` which returns an `Option<&T>`. The latter could return None, the former will panic at compile or runtime.
+* vectors are iterable (with `iter()`?)
+* vectors can only store one type, but you can get around that with a vector of enums - though you'll still need to know _which_ types your vec will hold at compile time
+```rust
+enum SpreadsheetCell {
+    Int(i32),
+    Float(f64),
+    Text(String),
+}
+
+let row = vec![
+    SpreadsheetCell::Int(3),
+    SpreadsheetCell::Text(String::from("blue")),
+    SpreadsheetCell::Float(10.12),
+];
+```
+
+### Hash Map (dictionary)
+* in `std::collections::HashMap;`
+* `HashMap<K, V>`
+* `let mut scores = HashMap::new(); scores.insert(String::from("Blue"), 10);`
+* key must be homogenous type and so must values
+* you can `zip` up two vectors into a vector of tuples then `collect` them into an HM 
+* `let scores: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();`
+* HashMaps take ownership of heap values, and copies stack
+* access values with `get()`, returns Options<T>
+* you can iterate over an HM, (key, value) tuples are returned
+* inserting with an extant key overwrites. 
+* `scores.entry(String::from("Blue")).or_insert(50);` inserts only if the key doesn't exist
+* if the key does exist `entry()...or_insert()` returns the value. you can use this to update the value 
+```
+for word in text.split_whitespace() {
+  let count = map.entry(word).or_insert(0);
+  *count += 1;
+}
+```
+  
 
 ## functions
 ```rust
