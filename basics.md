@@ -85,17 +85,19 @@ let row = vec![
 * you can `zip` up two vectors into a vector of tuples then `collect` them into an HM 
 * `let scores: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();`
 * HashMaps take ownership of heap values, and copies stack
-* access values with `get()`, returns Options<T>
+* access values with `get()`, returns `Options<T>`
 * you can iterate over an HM, (key, value) tuples are returned
 * inserting with an extant key overwrites. 
 * `scores.entry(String::from("Blue")).or_insert(50);` inserts only if the key doesn't exist
 * if the key does exist `entry()...or_insert()` returns the value. you can use this to update the value 
-```
+
+```rust
 for word in text.split_whitespace() {
   let count = map.entry(word).or_insert(0);
   *count += 1;
 }
 ```
+
   
 
 ## functions
