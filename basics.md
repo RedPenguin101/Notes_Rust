@@ -106,6 +106,32 @@ if number < 6 {
 * use array with `.iter()` or `Range` with `1..4` (this is included..excluded)
 * reverse your iterable with `.rev()`
 
+### Match
+* pattern matching: compare a value against patterns and execute on the one that matches
+* like an if without the boolean condition restriction 
+* arm syntax is `pattern => exec_code`
+
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter(state) => {
+            println!("State quarter from {:?}!", state);
+            25
+        },
+    }
+}
+```
+
 ## Ownership
 * why? memory safety for the heap without auto garbage 
 * everything you create which is put on the heap is owned by the variable (pointer) thet created it it and nothing else can change it. 
@@ -249,4 +275,42 @@ impl Rectangle {
 }
 
 let sq = Rectangle::square(3);
+```
+
+## Enums
+* aka enumerations. define a type by specifying its possible values.
+* define like `enum IpAddrKind { V4, V6 }`
+* create instance like `let four = IpAddrKind::V4` - note variants are namespaced under identifier
+* It can be useful to have the variants be structs or tuple structs, which are defined inline
+* you can still implement methods on enums
+
+```rust
+enum IpAddr {
+    V4(u8, u8, u8, u8),
+    V6(String),
+}
+
+let home = IpAddr::V4(127, 0, 0, 1);
+
+let loopback = IpAddr::V6(String::from("::1"));
+```
+
+### Option enum vs Nulls
+* an enum in the std lib (though you don't need to bring it in scope, it's always there)
+* the scenario where you are something or you are nothing - rusts answer to null
+* it has variants `Some` and `None` - don't need to namespace them here, so they are basically keywords
+* In effect it means you don't have to null check everything. because you can't add an `i32` and `Option<i32>` and only the Option can be 'null', you never accidentally try to add a non-null and null.
+* when you DO have a Option, you generally want to explicitly handle the cases where that option is None and Some - usually with match 
+
+```rust
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => Some(i + 1),
+    }
+}
+
+let five = Some(5);
+let six = plus_one(five);
+let none = plus_one(None);
 ```
