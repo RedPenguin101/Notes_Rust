@@ -422,6 +422,20 @@ fn read_username_from_file() -> Result<String, io::Error> {
 }
 ```
 
+## Traits
+* like interfaces
+* `pub trait Summary {fn summarize(&self) -> String;}`
+* `impl Summary for NewsArticle {fn summarize(&self) -> String {impl here}}`
+* fn in traits can have default implementations, which are overriden in the implementing class
+* a default can call other methods in the trait which don't have defaults
+* pass in an item annotated as an implementor of a trait to allow your functions to accept objects polymorphically
+* `pub fn notify(item: impl Summary) {print item.summarize());}
+* to get more complex in implementation you can remove the sugar syntax - the above would look like `pub fn notify<T: Summary>(item: T) {...}`. This is _trait bound_ syntax
+* specify multiple traits with `+`, as in `pub fn notify(item: impl Summary + Display)`, or alternatively `pub fn notify<T: Summary + Display>(item: T){...}`
+* return types that implement a trait with `... -> impl Summary {...`
+* you can also use trait bounds on implementations `impl<T> Pair<T> {...}` - you can have different impl blocks for the same struct, each of which implement different traits. THisi is _conditional implementation_
+* _blanket implementation_ is when you conditionally implement a trait for any type which implements another, specified trait. eg `impl<T: Display> ToString for T {...}` means you can call `to_string` on any type which implements `Display`
+
 ## IO
 ### reading a file into a string
 ```rust
