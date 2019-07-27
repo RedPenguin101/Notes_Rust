@@ -383,3 +383,52 @@ crate
 * use `pub use` if necessary 
 
 * to have a multi file structure, take the code from the scope block and put it in a file with the name of the module. But leave the `mod` where it is and put a `;` at the end of the line. That tells the compiler to look for that file
+
+## Error handling
+* No exceptions. 2 cats: recoverable (use `Result<T, E>`) and unrecoverable (`panic!` macro)
+* You will rarely write code that panics, mostly you will be writing recoverable cases
+
+### Panic
+* when `panic!` executes, print message and quit.
+* _bactrace_ is a list of all functions called to get to the error. 
+
+### Result
+* an enum with variants `Ok(T)` and `Err(E)`. When you call a fn that returns a Result you'll need to handle the two potential outcomes - eg with a match
+* you could use a nested match to handle different error types, like `match error.kind() {ErrorKind::NotFound => ...`
+* closures are another, more concise way
+* `unwrap` is a helper method on `Result` which is like a shortcut to the match, which returns either the result, or panics
+* `expect` does the same but allows you to specify the error message,
+* Propagate the error to the calling function: write the called function which returns a `Result`, with the E variant being an `io::Error`
+* the propagation shortcut is question mark - but can only be used in functions which return a result
+
+```rust
+    let f = File::open("hello.txt");
+    
+    let mut f = match f {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+    
+    // equivalent to
+    let mut f = File::open("hello.txt")?;
+    
+// a full function
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut s = String::new();
+
+    File::open("hello.txt")?.read_to_string(&mut s)?;
+
+    Ok(s)
+}
+```
+
+## IO
+### reading a file into a string
+```rust
+use std::io;
+use std::fs;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    fs::read_to_string("hello.txt")
+}
+```
