@@ -424,17 +424,23 @@ fn read_username_from_file() -> Result<String, io::Error> {
 
 ## Traits
 * like interfaces
-* `pub trait Summary {fn summarize(&self) -> String;}`
-* `impl Summary for NewsArticle {fn summarize(&self) -> String {impl here}}`
-* fn in traits can have default implementations, which are overriden in the implementing class
+* definition: `pub trait Summary {fn summarize(&self) -> String;}`
+* implementaion: `impl Summary for NewsArticle {fn summarize(&self) -> String {impl here}}`
+* fn in traits can have default implementations, which can be overriden in the implementing class
 * a default can call other methods in the trait which don't have defaults
-* pass in an item annotated as an implementor of a trait to allow your functions to accept objects polymorphically
-* `pub fn notify(item: impl Summary) {print item.summarize());}`
-* to get more complex in implementation you can remove the sugar syntax - the above would look like `pub fn notify<T: Summary>(item: T) {...}`. This is _trait bound_ syntax
-* specify multiple traits with `+`, as in `pub fn notify(item: impl Summary + Display)`, or alternatively `pub fn notify<T: Summary + Display>(item: T){...}`
-* return types that implement a trait with `... -> impl Summary {...`
-* you can also use trait bounds on implementations `impl<T> Pair<T> {...}` - you can have different impl blocks for the same struct, each of which implement different traits. THisi is _conditional implementation_
-* _blanket implementation_ is when you conditionally implement a trait for any type which implements another, specified trait. eg `impl<T: Display> ToString for T {...}` means you can call `to_string` on any type which implements `Display`
+
+### Passing ploymorphic structures (any object which implements a trait) as a function argument
+* pass in an item annotated as an implementor of a trait to allow your functions to accept structures polymorphically
+* `pub fn notify(item: impl Summary) {print item.summarize());}` Reads like _a function notify, for any structure that implements Summary_
+* specify multiple traits with `+`, as in `pub fn notify(item: impl Summary + Display)`,
+* return types that implement a trait with `... -> impl Summary {...` _return a structure that implements Summary_
+
+### Trait Bound Syntax
+* the above is shorthand for `pub fn notify<T: Summary>(item: T) {...}`. This is _trait bound_ syntax.
+* multiple traits in TBS: `pub fn notify<T: Summary + Display>(item: T){...}`
+
+* you can also use trait bounds on implementations `impl<T> Pair<T> {...}` - you can have different impl blocks for the same struct, each of which implement different traits. This is _conditional implementation_
+* _blanket implementation_ is when you conditionally implement a trait for any type which implements another, specified trait. eg `impl<T: Display> ToString for T {...}` means you can call `to_string` on any type which implements `Display`. Read as _an implementation of ToString for any structure which implements Display_
 
 ## IO
 ### reading a file into a string
