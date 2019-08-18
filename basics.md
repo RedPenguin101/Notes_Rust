@@ -13,7 +13,9 @@
 * `::` is used for specifying namespace. eg `String::from(literal)`
 * debug print with `"{:?}"` and pretty print with `"{:#?}"`
 * a Range object has syntax `x..y` where x and y are integers. use in for loops and when slice indexing
+* use `(x..y).rev()` to reverse range
 * type conversion must be explicit: `myinteger as f64`
+* exponents with `x.pow(y)`
 
 
 ## Variable declaration
